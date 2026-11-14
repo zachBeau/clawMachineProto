@@ -46,7 +46,7 @@ extern "C" void app_main(void)
     static driver::JoyStickDriver stickDrv;
     static driver::MotorDriver shoulderDrv(enaPinX, dirPinX, pulsePinX);  // motor at the origin
     static driver::MotorDriver elbowDrv(enaPinY, dirPinY, pulsePinY);     // motor at the joint between l1 and l2
-    static driver::MotorDriver vertical(enaPinZ, dirPinZ, pulsePinZ);
+    static driver::MotorDriver vert(enaPinZ, dirPinZ, pulsePinZ);
     ESP_LOGI(TAG, "Drivers complete");
 
     ESP_LOGI(TAG, "Initializing logic files");
@@ -54,6 +54,7 @@ extern "C" void app_main(void)
     static logic::JoyStickLogic stick(stickDrv);
     static logic::MotorLogic shoulder(shoulderDrv);
     static logic::MotorLogic elbow(elbowDrv);
+    static logic::MotorLogic vertical(vert);
     static logic::Position pos(26.5f, 26.5f); // l1, l2
     ESP_LOGI(TAG, "Logic files complete");
     ESP_LOGI(TAG, "Initializing arm configuration");
@@ -61,7 +62,7 @@ extern "C" void app_main(void)
     ESP_LOGI(TAG, "Arm configuration complete");
 
     ESP_LOGI(TAG, "Initializing control element");
-    static control::Control ctl(buttLog, stick, shoulder, elbow, pos, cfg);
+    static control::Control ctl(buttLog, stick, shoulder, elbow, vertical, pos, cfg);
 
     ESP_LOGI(TAG, "Debug joystick raw values");
     for (int i = 0; i < 100; i++) {

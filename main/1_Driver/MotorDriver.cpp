@@ -83,7 +83,7 @@ void MotorDriver::waitDone() {
 }
 
 void MotorDriver::moveSteps(size_t steps, uint32_t freqHz) {
-// if freqHz = 400, then 15rpm. RPM = freq_hz × 60 / (full_steps_per_rev × microstepping)
+// RPM = freq_hz × 60 / (full_steps_per_rev × microstepping)
     if (steps == 0 || steps > MAX_STEPS) return;
     uint32_t halfPeriod = (500000 / freqHz);
     ESP_LOGI(TAG, "halfPeriod: = %lu", halfPeriod);

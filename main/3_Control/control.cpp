@@ -25,13 +25,14 @@ namespace control {
 //→ both motors pulse for the same 20 ms
 
     Control::Control(logic::ButtonLogic& button, logic::JoyStickLogic& stick, logic::MotorLogic& shoulder,
-            logic::MotorLogic& elbow, logic::Position& pos, const Config& cfg)
-    : button_(button), stick_(stick), shoulder_(shoulder), elbow_(elbow), pos_(pos), cfg_(cfg) {
+            logic::MotorLogic& elbow, logic::MotorLogic& vert, logic::Position& pos, const Config& cfg)
+    : button_(button), stick_(stick), shoulder_(shoulder), elbow_(elbow), vert_(vert), pos_(pos), cfg_(cfg) {
 
     const float twoPi = 6.28318530718f;
     stepsPerRad1 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep1 * cfg_.gear1 / twoPi;
     stepsPerRad2 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep2 * cfg_.gear2 / twoPi;
-    stick_.calibrate();
+
+        stick_.calibrate();
 }
 //convert tip position to angular motor steps
 bool Control::toSteps(float x, float y, long& s1, long& s2) const {
@@ -154,6 +155,16 @@ void Control::tick() {
 //calls tick in a continous loop
 void Control::run() {
     while (true) {
+        if (button_.isPressed()) {
+            //vertical stepper motor is NOT microstepping
+            //assuming one revelution raises/lowers the level 1/8 inch, 200 steps for 1/8 inch movement, and moving 3 inches
+            //200 * 8 * 3 = 4800
+            vert_.setDir(0);
+            vert_.moveABunch(4800, 100);
+            //set claw logic here
+            vert_.setDir(1);
+            vert_.moveABunch(4800, 100);
+        }
         tick();
     }
 }

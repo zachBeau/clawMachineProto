@@ -19,12 +19,12 @@ public:
     MotorLogic(driver::MotorDriver& driver);
 
     //blocking move function
-    void move(size_t steps, uint32_t freqHz);
+    void move(uint16_t steps, uint32_t freqHz);
     //non-blocking move function
     bool start(uint32_t steps, uint32_t segmentUs);
     //wait for start() to finish
     void wait();
-    void moveABunch(size_t steps, uint32_t freqHz, uint8_t dir);
+    void moveABunch(size_t steps, uint32_t freqHz);
     void setDir(uint8_t);
     void enable(uint8_t);
 

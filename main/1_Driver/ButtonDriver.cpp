@@ -21,14 +21,12 @@ namespace driver {
         bcfg.mode = GPIO_MODE_INPUT;
         bcfg.pull_down_en = GPIO_PULLDOWN_ENABLE;
         bcfg.pull_up_en = GPIO_PULLUP_DISABLE;
-        bcfg.intr_type = GPIO_INTR_DISABLE;
 
         gpio_config(&bcfg);
-
     }
 
     bool ButtonDriver::isPressed() {
         ESP_LOGI(TAG, "called isPressed()");
-        return gpio_get_level(buttonPin) == 1;
+        return (gpio_get_level(buttonPin) == 1);
     }
 }

@@ -80,6 +80,7 @@ class Control {
     logic::JoyStickLogic& stick_;
     logic::MotorLogic& shoulder_;
     logic::MotorLogic& elbow_;
+    logic::MotorLogic& vert_;
     logic::Position& pos_;
     Config cfg_;
 
@@ -99,7 +100,7 @@ class Control {
 
 public:
     Control(logic::ButtonLogic& button, logic::JoyStickLogic& stick, logic::MotorLogic& shoulder,
-        logic::MotorLogic& elbow, logic::Position& pos, const Config& cfg = Config{});
+        logic::MotorLogic& elbow, logic::MotorLogic& vert, logic::Position& pos, const Config& cfg = Config{});
     void begin();   // enable motors and set the home pose
     void tick();    // runs one segment (blocks ~segmentUs)
     void run();     // tick() forever

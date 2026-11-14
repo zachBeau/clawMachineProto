@@ -16,8 +16,7 @@ MotorLogic::MotorLogic(driver::MotorDriver& driver) : driver_(driver) {
     driver_.init();
 }
 
-    //look at steps.... does it need size_t? or uint16_t?
-void MotorLogic::move(size_t steps, uint32_t freqHz) {
+void MotorLogic::move(uint16_t steps, uint32_t freqHz) {
     driver_.moveSteps(steps, freqHz);
 }
 
@@ -29,9 +28,8 @@ void MotorLogic::wait() {
     driver_.waitDone();
 }
 
-void MotorLogic::moveABunch(size_t steps, uint32_t freqHz, uint8_t dir) {
+void MotorLogic::moveABunch(size_t steps, uint32_t freqHz) {
     size_t maxMove = 500;
-    ESP_ERROR_CHECK(driver_.dir(dir));
     while (steps > 0) {
         if (steps > maxMove) {
             move(maxMove, freqHz);

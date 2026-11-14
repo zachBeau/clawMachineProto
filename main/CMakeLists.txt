@@ -6,8 +6,10 @@
 
 idf_component_register(
     SRCS "clawMachineProto.cpp"
+        "1_Driver/ButtonDriver.cpp"
         "1_Driver/joyStickDriver.cpp"
         "1_Driver/MotorDriver.cpp"
+        "2_logic/ButtonLogic.cpp"
         "2_Logic/joyStickLogic.cpp"
         "2_Logic/MotorLogic.cpp"
         "2_Logic/position.cpp"
