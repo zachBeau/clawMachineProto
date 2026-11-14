@@ -24,13 +24,14 @@ namespace control {
 //→ IK → joint angles → absolute step counts → deltas
 //→ both motors pulse for the same 20 ms
 
-Control::Control(logic::JoyStickLogic& stick, logic::Position& pos,
-                 logic::MotorLogic& shoulder, logic::MotorLogic& elbow,
-                 const Config& cfg)
-    : stick_(stick), pos_(pos), shoulder_(shoulder), elbow_(elbow), cfg_(cfg) {
+    Control::Control(logic::ButtonLogic& button, logic::JoyStickLogic& stick, logic::MotorLogic& shoulder,
+            logic::MotorLogic& elbow, logic::Position& pos, const Config& cfg)
+    : button_(button), stick_(stick), shoulder_(shoulder), elbow_(elbow), pos_(pos), cfg_(cfg) {
+
     const float twoPi = 6.28318530718f;
     stepsPerRad1 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep1 * cfg_.gear1 / twoPi;
     stepsPerRad2 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep2 * cfg_.gear2 / twoPi;
+    stick_.calibrate();
 }
 //convert tip position to angular motor steps
 bool Control::toSteps(float x, float y, long& s1, long& s2) const {

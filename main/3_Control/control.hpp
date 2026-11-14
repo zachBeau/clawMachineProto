@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cstdint>
+#include "ButtonLogic.hpp"
 #include "joyStickLogic.hpp"
 #include "position.hpp"
 #include "MotorLogic.hpp"
@@ -75,10 +76,11 @@ struct Config {
 };
 
 class Control {
+    logic::ButtonLogic& button_;
     logic::JoyStickLogic& stick_;
-    logic::Position& pos_;
     logic::MotorLogic& shoulder_;
     logic::MotorLogic& elbow_;
+    logic::Position& pos_;
     Config cfg_;
 
     float stepsPerRad1, stepsPerRad2;
@@ -96,10 +98,8 @@ class Control {
     bool plan(float segmentMoveX, float segmentMoveY, Plan& out) const;
 
 public:
-    Control(logic::JoyStickLogic& stick, logic::Position& pos,
-            logic::MotorLogic& shoulder, logic::MotorLogic& elbow,
-            const Config& cfg = Config{});
-
+    Control(logic::ButtonLogic& button, logic::JoyStickLogic& stick, logic::MotorLogic& shoulder,
+        logic::MotorLogic& elbow, logic::Position& pos, const Config& cfg = Config{});
     void begin();   // enable motors and set the home pose
     void tick();    // runs one segment (blocks ~segmentUs)
     void run();     // tick() forever

@@ -6,9 +6,11 @@
 
 #include <stdio.h>
 
+#include "ButtonDriver.hpp"
 #include "joyStickDriver.hpp"
-#include "joyStickLogic.hpp"
 #include "MotorDriver.hpp"
+#include "ButtonLogic.hpp"
+#include "joyStickLogic.hpp"
 #include "MotorLogic.hpp"
 #include "position.hpp"
 #include "control.hpp"
@@ -28,31 +30,45 @@ constexpr gpio_num_t pulsePinX = GPIO_NUM_5;
 constexpr gpio_num_t enaPinY = GPIO_NUM_23;
 constexpr gpio_num_t dirPinY = GPIO_NUM_22;
 constexpr gpio_num_t pulsePinY = GPIO_NUM_4;
+constexpr gpio_num_t enaPinZ = GPIO_NUM_25;
+constexpr gpio_num_t dirPinZ = GPIO_NUM_26;
+constexpr gpio_num_t pulsePinZ = GPIO_NUM_27;
 constexpr gpio_num_t jPinX = GPIO_NUM_33;
 constexpr gpio_num_t jPinY = GPIO_NUM_35;
-constexpr gpio_num_t jPinB = GPIO_NUM_26;
+constexpr gpio_num_t zPin = GPIO_NUM_32;
 
+static const char* TAG = "MAIN";
 
 extern "C" void app_main(void)
 {
-
-    // static: these hold big buffers / must outlive app_main's stack frame
+    ESP_LOGI(TAG, "Initializing drivers");
+    static driver::ButtonDriver butt(zPin);
+    static driver::JoyStickDriver stickDrv;
     static driver::MotorDriver shoulderDrv(enaPinX, dirPinX, pulsePinX);  // motor at the origin
     static driver::MotorDriver elbowDrv(enaPinY, dirPinY, pulsePinY);     // motor at the joint between l1 and l2
-    static driver::JoyStickDriver stickDrv;
-    stickDrv.init();
+    static driver::MotorDriver vertical(enaPinZ, dirPinZ, pulsePinZ);
+    ESP_LOGI(TAG, "Drivers complete");
 
+    ESP_LOGI(TAG, "Initializing logic files");
+    static logic::ButtonLogic buttLog(butt);
     static logic::JoyStickLogic stick(stickDrv);
-    stick.calibrate();                      // keep your hands off the stick for ~150 ms
+    static logic::MotorLogic shoulder(shoulderDrv);
+    static logic::MotorLogic elbow(elbowDrv);
+    static logic::Position pos(26.5f, 26.5f); // l1, l2
+    ESP_LOGI(TAG, "Logic files complete");
+    ESP_LOGI(TAG, "Initializing arm configuration");
+    control::Config cfg;
+    ESP_LOGI(TAG, "Arm configuration complete");
+
+    ESP_LOGI(TAG, "Initializing control element");
+    static control::Control ctl(buttLog, stick, shoulder, elbow, pos, cfg);
+
+    ESP_LOGI(TAG, "Debug joystick raw values");
     for (int i = 0; i < 100; i++) {
         printf("raw %d %d  norm %.2f %.2f\n",
                stickDrv.getRawX(), stickDrv.getRawY(), stick.x(), stick.y());
         vTaskDelay(pdMS_TO_TICKS(20));
     }
-    static logic::MotorLogic shoulder(shoulderDrv);
-    static logic::MotorLogic elbow(elbowDrv);
-    static logic::Position pos(26.5f, 26.5f); // l1, l2
-    control::Config cfg;
 
     cfg.invertShoulder = true;
     cfg.invertElbow = true;
@@ -61,7 +77,7 @@ extern "C" void app_main(void)
     cfg.joySwapXY = true;
     cfg.elbowAbsolute = false;
     cfg.vMax = 12;
-    static control::Control ctl(stick, pos, shoulder, elbow, cfg);
+
     ctl.begin();
     ctl.run();   // never returns
 
