@@ -9,6 +9,7 @@
 #include "joyStickLogic.hpp"
 #include "position.hpp"
 #include "MotorLogic.hpp"
+#include "buttonLogic.hpp"
 
 
 namespace control {
@@ -69,6 +70,7 @@ class Control {
     logic::Position& pos_;
     logic::MotorLogic& shoulder_;
     logic::MotorLogic& elbow_;
+    logic::ButtonLogic& button_;
     Config cfg_;
 
     float stepsPerRad1, stepsPerRad2;
@@ -87,7 +89,7 @@ class Control {
 
 public:
     Control(logic::JoyStickLogic& stick, logic::Position& pos,
-            logic::MotorLogic& shoulder, logic::MotorLogic& elbow,
+            logic::MotorLogic& shoulder, logic::MotorLogic& elbow, logic::ButtonLogic& button,
             const Config& cfg = Config{});
 
     void begin();   // enable motors and set the home pose

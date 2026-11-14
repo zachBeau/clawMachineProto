@@ -11,7 +11,10 @@ static const char* TAG = "JoyStickLogic";
 namespace logic {
 
 JoyStickLogic::JoyStickLogic(driver::JoyStickDriver& stickDriver)
-    : stickDriver_(stickDriver), xCenter(2002), yCenter(1959), deadzone(0.1f) {}
+    : stickDriver_(stickDriver), xCenter(2002), yCenter(1959), deadzone(0.1f) {
+
+    stickDriver_.init();
+}
 
 void JoyStickLogic::calibrate(int samples) {
     float calX = 0, calY = 0;

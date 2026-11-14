@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "../2_Logic/direction.hpp"
 #include "driver/gpio.h"
 #include "soc/gpio_num.h"
 #include "esp_adc/adc_oneshot.h"

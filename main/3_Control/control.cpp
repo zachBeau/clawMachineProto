@@ -25,9 +25,9 @@ namespace control {
 //→ both motors pulse for the same 20 ms
 
 Control::Control(logic::JoyStickLogic& stick, logic::Position& pos,
-                 logic::MotorLogic& shoulder, logic::MotorLogic& elbow,
+                 logic::MotorLogic& shoulder, logic::MotorLogic& elbow, logic::ButtonLogic& button,
                  const Config& cfg)
-    : stick_(stick), pos_(pos), shoulder_(shoulder), elbow_(elbow), cfg_(cfg) {
+    : stick_(stick), pos_(pos), shoulder_(shoulder), elbow_(elbow), button_(button), cfg_(cfg) {
     const float twoPi = 6.28318530718f;
     stepsPerRad1 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep1 * cfg_.gear1 / twoPi;
     stepsPerRad2 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep2 * cfg_.gear2 / twoPi;
@@ -152,6 +152,9 @@ void Control::tick() {
 //calls tick in a continous loop
 void Control::run() {
     while (true) {
+        if (button_.isPressed()) {
+
+        }
         tick();
     }
 }

@@ -7,9 +7,11 @@
 #include <stdio.h>
 
 #include "joyStickDriver.hpp"
-#include "joyStickLogic.hpp"
+#include "ButtonDriver.hpp"
 #include "MotorDriver.hpp"
+#include "ButtonLogic.hpp"
 #include "MotorLogic.hpp"
+#include "joyStickLogic.hpp"
 #include "position.hpp"
 #include "control.hpp"
 #include "freertos/FreeRTOS.h"
@@ -30,20 +32,21 @@ constexpr gpio_num_t dirPinY = GPIO_NUM_22;
 constexpr gpio_num_t pulsePinY = GPIO_NUM_4;
 constexpr gpio_num_t jPinX = GPIO_NUM_33;
 constexpr gpio_num_t jPinY = GPIO_NUM_35;
-constexpr gpio_num_t jPinB = GPIO_NUM_26;
+//constexpr gpio_num_t jPinB = GPIO_NUM_26;
+constexpr gpio_num_t buttonPin = GPIO_NUM_26;
 
+static const char* TAG = "MAIN";
 
 extern "C" void app_main(void)
 {
 
-    // static: these hold big buffers / must outlive app_main's stack frame
+    ESP_LOGI(TAG, "Initializing drivers");
     static driver::MotorDriver shoulderDrv(enaPinX, dirPinX, pulsePinX);  // motor at the origin
     static driver::MotorDriver elbowDrv(enaPinY, dirPinY, pulsePinY);     // motor at the joint between l1 and l2
     static driver::JoyStickDriver stickDrv;
-    stickDrv.init();
-
+    static driver::ButtonDriver dButton(buttonPin);
     static logic::JoyStickLogic stick(stickDrv);
-    stick.calibrate();                      // keep your hands off the stick for ~150 ms
+    stick.calibrate();
     for (int i = 0; i < 100; i++) {
         printf("raw %d %d  norm %.2f %.2f\n",
                stickDrv.getRawX(), stickDrv.getRawY(), stick.x(), stick.y());
@@ -51,8 +54,10 @@ extern "C" void app_main(void)
     }
     static logic::MotorLogic shoulder(shoulderDrv);
     static logic::MotorLogic elbow(elbowDrv);
+    static logic::ButtonLogic button(dButton);
     static logic::Position pos(26.5f, 26.5f); // l1, l2
     control::Config cfg;
+    static control::Control ctl(stick, pos, shoulder, elbow, button, cfg);
 
     cfg.invertShoulder = false;
     cfg.invertElbow = false;
@@ -61,7 +66,7 @@ extern "C" void app_main(void)
     cfg.joySwapXY = false;
     cfg.elbowAbsolute = false;
     cfg.vMax = 3;
-    static control::Control ctl(stick, pos, shoulder, elbow, cfg);
+
     ctl.begin();
     ctl.run();   // never returns
 
