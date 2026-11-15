@@ -70,9 +70,7 @@ struct Config {
     bool joyInvertX = false;
     bool joyInvertY = false;
 
-    // static int dropSteps = 500;
-    // static float chuteX = 40.0f; //check
-    // static float chuteY = 30.0f;
+    bool invertZ = false;
 };
 
 class Control {

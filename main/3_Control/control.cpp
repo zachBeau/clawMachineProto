@@ -159,10 +159,10 @@ void Control::run() {
             //vertical stepper motor is NOT microstepping
             //assuming one revelution raises/lowers the level 1/8 inch, 200 steps for 1/8 inch movement, and moving 3 inches
             //200 * 8 * 3 = 4800
-            vert_.setDir(0);
+            cfg_.invertZ ? vert_.setDir(0) : vert_.setDir(1);
             vert_.moveABunch(4800, 100);
-            //set claw logic here
-            vert_.setDir(1);
+            vTaskDelay(pdMS_TO_TICKS(1000)); //set claw logic here
+            cfg_.invertZ ? vert_.setDir(1) : vert_.setDir(0);
             vert_.moveABunch(4800, 100);
         }
         tick();
