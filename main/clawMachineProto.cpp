@@ -71,14 +71,6 @@ extern "C" void app_main(void)
         vTaskDelay(pdMS_TO_TICKS(20));
     }
 
-    cfg.invertShoulder = true;
-    cfg.invertElbow = true;
-    cfg.joyInvertX = true;
-    cfg.joyInvertY = false;
-    cfg.joySwapXY = true;
-    cfg.elbowAbsolute = false;
-    cfg.vMax = 12;
-
     ctl.begin();
     ctl.run();   // never returns
 

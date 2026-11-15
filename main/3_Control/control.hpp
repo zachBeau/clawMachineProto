@@ -61,13 +61,13 @@ struct Config {
                                         //gear = driven wheel / motor wheel
                                         //diameter of wheel measured at the belt contact point + belt width
 
-    bool invertShoulder = false;        // flip if the joint rotates the wrong way
-    bool invertElbow = false;
-    bool elbowAbsolute = true;         // true if motor 2 sits at the base and drives link 2 via belt/linkage
+    bool invertShoulder = true;        // flip if the joint rotates the wrong way
+    bool invertElbow = true;
+    bool elbowAbsolute = false;         // true if motor 2 sits at the base and drives link 2 via belt/linkage
 
     // Joystick orientation
-    bool joySwapXY = false;
-    bool joyInvertX = false;
+    bool joySwapXY = true;
+    bool joyInvertX = true;
     bool joyInvertY = false;
 
     bool invertZ = false;
