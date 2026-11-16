@@ -12,6 +12,7 @@ namespace logic {
 
     ButtonLogic::ButtonLogic(driver::ButtonDriver& bDriver) : bDriver_(bDriver) {
         bDriver_.init();
+
     }
 
     bool ButtonLogic::isPressed() {
