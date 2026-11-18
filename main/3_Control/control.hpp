@@ -35,12 +35,12 @@ struct Config {
     float startX = 21.5f;
     float startY = 21.5f;
 
-    float vMax = 8.0f;                  //length units/second
+    float vMax = 5.0f;                  //length units/second
                                         //lower if motor skips under load
     float yMin = 2.0f;                 // keeps tip above this line
-    float yMax = 35.0f;
-    float xMin = 20.0f;
-    float xMax = 50.0f;
+    float yMax = 41.0f;
+    float xMin = -40.0f;
+    float xMax = 40.0f;
 
     // float yMin = -28.0f;                 // keeps tip above this line
     // float yMax = 28.0f;

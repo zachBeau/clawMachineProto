@@ -184,19 +184,21 @@ void Control::run() {
 
             vert_.enable(0);
             cfg_.invertZ ? vert_.setDir(0) : vert_.setDir(1);
-            vert_.moveABunch(1750, 1000);
+            vert_.moveABunch(2150, 1000);
             ESP_LOGI(TAG, "Servo?");
-            ESP_ERROR_CHECK(iot_servo_write_angle(servo_, 90.0f));
+            ESP_ERROR_CHECK(iot_servo_write_angle(servo_, 80.0f)); // close claw
             cfg_.invertZ ? vert_.setDir(1) : vert_.setDir(0);
             // move to chute
 
-            vert_.moveABunch(1750, 1000);
+
+
+            vert_.moveABunch(2150, 1000);
 
             float requestedX = 21.5f; //stick value * vMax * segmentUS(converted to seconds)
             float requestedY = 21.5f;
             long shoulderSteps = 0, elbowSteps = 0;
 
-            long originStep1 = 3555, originStep2 = -3911;
+            long originStep1 = 3200, originStep2 = -3200;
 
             shoulderSteps = steps1 - originStep1;
             elbowSteps = steps2 - originStep2;

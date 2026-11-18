@@ -61,7 +61,7 @@ extern "C" void app_main(void)
     static logic::MotorLogic shoulder(shoulderDrv);
     static logic::MotorLogic elbow(elbowDrv);
     static logic::MotorLogic vertical(vert);
-    static logic::Position pos(26.5f, 26.5f, false); // l1, l2
+    static logic::Position pos(21.5f, 21.5f, false); // l1, l2
     ESP_LOGI(TAG, "Logic files complete");
     ESP_LOGI(TAG, "Initializing arm configuration");
     control::Config cfg;
@@ -91,15 +91,7 @@ extern "C" void app_main(void)
                stickDrv.getRawX(), stickDrv.getRawY(), stick.x(), stick.y());
         vTaskDelay(pdMS_TO_TICKS(20));
     }
-    /*
-    cfg.invertShoulder = true;
-    cfg.invertElbow = true;
-    cfg.elbowAbsolute = false;
 
-    bool joySwapXY = true;
-    bool joyInvertX = true;
-    bool joyInvertY = false;
-*/
     ctl.begin();
     ctl.run();   // never returns
 
