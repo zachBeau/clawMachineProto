@@ -17,6 +17,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
+#include "driver/ledc.h"
+#include "iot_servo.h"
 
 #include "esp_rom_sys.h"
 
@@ -36,6 +38,10 @@ constexpr gpio_num_t pulsePinZ = GPIO_NUM_27;
 constexpr gpio_num_t jPinX = GPIO_NUM_33;
 constexpr gpio_num_t jPinY = GPIO_NUM_35;
 constexpr gpio_num_t zPin = GPIO_NUM_32;
+
+constexpr gpio_num_t servoPin = GPIO_NUM_12;
+
+
 
 static const char* TAG = "MAIN";
 
@@ -61,8 +67,23 @@ extern "C" void app_main(void)
     control::Config cfg;
     ESP_LOGI(TAG, "Arm configuration complete");
 
+    servo_handle_t servo = NULL;
+    servo_config_t servoConfig = SERVO_CONFIG_DEFAULT(
+        LEDC_LOW_SPEED_MODE,
+        LEDC_TIMER_0,
+        LEDC_CHANNEL_0,
+        servoPin
+    );
+    servoConfig.max_angle = cfg.maxServoAngle;
+    servoConfig.min_width_us = cfg.minServoWidth;
+    servoConfig.max_width_us = cfg.maxServoWidth;
+    servoConfig.freq = cfg.servoFrequency;
+
+    ESP_ERROR_CHECK(iot_servo_new(&servoConfig, &servo));
+
+
     ESP_LOGI(TAG, "Initializing control element");
-    static control::Control ctl(buttLog, stick, shoulder, elbow, vertical, pos, cfg);
+    static control::Control ctl(buttLog, stick, shoulder, elbow, vertical, pos, servo, cfg);
 
     ESP_LOGI(TAG, "Debug joystick raw values");
     for (int i = 0; i < 100; i++) {

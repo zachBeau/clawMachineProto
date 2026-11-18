@@ -26,10 +26,10 @@ namespace logic {
         // theta1 = atan2f(commandedY, commandedX) - atan2f(l2_ * sinf(a2), l1_ + l2_ * cosf(a2));
         // return true;
         float s2 = -sqrt(1 - (c2) * (c2));
-        theta1 = (atan2f(s2, c2));
+        theta2 = (atan2f(s2, c2));
         float k1 = l1_ + (l2_ * c2);
         float k2 = l2_ * c2;
-        theta2 = (atan2f(commandedY, commandedX) - atan2f(k2, k1));
+        theta1 = (atan2f(commandedY, commandedX) - atan2f(k2, k1));
         return true;
     }
 
