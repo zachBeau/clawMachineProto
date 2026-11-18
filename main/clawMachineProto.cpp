@@ -91,7 +91,6 @@ extern "C" void app_main(void)
                stickDrv.getRawX(), stickDrv.getRawY(), stick.x(), stick.y());
         vTaskDelay(pdMS_TO_TICKS(20));
     }
-
     ctl.begin();
     ctl.run();   // never returns
 
