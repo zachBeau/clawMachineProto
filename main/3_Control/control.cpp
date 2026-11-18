@@ -162,10 +162,10 @@ void Control::run() {
             //200 * 8 * 3 = 4800
             vert_.enable(0);
             cfg_.invertZ ? vert_.setDir(0) : vert_.setDir(1);
-            vert_.moveABunch(4800, 1000);
+            vert_.moveABunch(1600, 1000);
             vTaskDelay(pdMS_TO_TICKS(1000)); //set claw logic here
             cfg_.invertZ ? vert_.setDir(1) : vert_.setDir(0);
-            vert_.moveABunch(4800, 1000);
+            vert_.moveABunch(1600, 1000);
             vert_.enable(1);
         }
         tick();

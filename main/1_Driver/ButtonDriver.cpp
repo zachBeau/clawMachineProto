@@ -20,7 +20,7 @@ namespace driver {
         bcfg.pin_bit_mask = (1ULL << buttonPin);
         bcfg.mode = GPIO_MODE_INPUT;
         bcfg.pull_down_en = GPIO_PULLDOWN_ENABLE;
-        bcfg.pull_up_en = GPIO_PULLUP_DISABLE;
+        bcfg.pull_up_en = GPIO_PULLUP_DISABLE; 
 
         gpio_config(&bcfg);
     }

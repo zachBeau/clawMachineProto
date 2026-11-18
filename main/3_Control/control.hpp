@@ -56,7 +56,7 @@ struct Config {
     float stepAngleDeg = 1.8f; //1.8 is confirmed
     int   microstep1 = 16, microstep2 = 16;
     //float gear1 = 40.0f /12.0f, gear2 = 45.0f / 16.0f; //gear1, microstep1 are tied to stepsPerRad1_, one motor shoulder or elbow
-    float gear1 = 45.0f/16.0f, gear2 = 40.0f / 12.0f;
+    float gear1 = 4.0f, gear2 = 4.0f;
                                         //same for microstep2, gear2
                                         //gear = driven wheel / motor wheel
                                         //diameter of wheel measured at the belt contact point + belt width
@@ -70,7 +70,7 @@ struct Config {
     bool joyInvertX = true;
     bool joyInvertY = false;
 
-    bool invertZ = false;
+    bool invertZ = true;
 };
 
 class Control {
