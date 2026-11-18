@@ -15,5 +15,5 @@ idf_component_register(
         "2_Logic/position.cpp"
         "3_Control/control.cpp"
     INCLUDE_DIRS "." "1_Driver" "2_Logic" "3_Control"
-    REQUIRES esp_adc driver esp_driver_gpio esp_driver_rmt
+    REQUIRES esp_adc driver esp_driver_gpio esp_driver_rmt esp_driver_ledc espressif__servo
 )

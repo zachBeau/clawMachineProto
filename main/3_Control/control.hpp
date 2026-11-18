@@ -10,6 +10,8 @@
 #include "joyStickLogic.hpp"
 #include "position.hpp"
 #include "MotorLogic.hpp"
+#include "driver/ledc.h"
+#include "iot_servo.h"
 
 
 namespace control {
@@ -30,20 +32,20 @@ struct Config {
 
 
     // tip start position
-    float startX = 26.5f;
-    float startY = 26.5f;
+    float startX = 21.5f;
+    float startY = 21.5f;
 
     float vMax = 8.0f;                  //length units/second
                                         //lower if motor skips under load
-    // float yMin = 2.65f;                 // keeps tip above this line
-    // float yMax = 60.0f;
-    // float xMin = -40.0f;
-    // float xMax = 40.0f;
+    float yMin = 2.0f;                 // keeps tip above this line
+    float yMax = 35.0f;
+    float xMin = 20.0f;
+    float xMax = 40.0f;
 
-    float yMin = -28.0f;                 // keeps tip above this line
-    float yMax = 28.0f;
-    float xMin = 15.0f;
-    float xMax = 42.0f;
+    // float yMin = -28.0f;                 // keeps tip above this line
+    // float yMax = 28.0f;
+    // float xMin = 15.0f;
+    // float xMax = 42.0f;
 
     uint32_t segmentUs = 20000;         // one straight-line segment = 20 ms
     uint32_t maxStepsPerSeg = 64;       // per motor; 16 steps / 20 ms = 800 Hz. must be <= MAX_STEPS
@@ -56,7 +58,7 @@ struct Config {
     float stepAngleDeg = 1.8f; //1.8 is confirmed
     int   microstep1 = 16, microstep2 = 16;
     //float gear1 = 40.0f /12.0f, gear2 = 45.0f / 16.0f; //gear1, microstep1 are tied to stepsPerRad1_, one motor shoulder or elbow
-    float gear1 = 45.0f/16.0f, gear2 = 40.0f / 12.0f;
+    float gear1 = 4.0f, gear2 = 4.0f;
                                         //same for microstep2, gear2
                                         //gear = driven wheel / motor wheel
                                         //diameter of wheel measured at the belt contact point + belt width
@@ -70,7 +72,12 @@ struct Config {
     bool joyInvertX = true;
     bool joyInvertY = false;
 
-    bool invertZ = false;
+    bool invertZ = true;
+
+    uint16_t maxServoAngle = 180;
+    uint16_t maxServoWidth = 2500;
+    uint16_t minServoWidth = 500;
+    uint32_t servoFrequency = 50;
 };
 
 class Control {
@@ -80,6 +87,7 @@ class Control {
     logic::MotorLogic& elbow_;
     logic::MotorLogic& vert_;
     logic::Position& pos_;
+    servo_handle_t& servo_;
     Config cfg_;
 
     float stepsPerRad1, stepsPerRad2;
@@ -97,8 +105,14 @@ class Control {
     bool plan(float segmentMoveX, float segmentMoveY, Plan& out) const;
 
 public:
-    Control(logic::ButtonLogic& button, logic::JoyStickLogic& stick, logic::MotorLogic& shoulder,
-        logic::MotorLogic& elbow, logic::MotorLogic& vert, logic::Position& pos, const Config& cfg = Config{});
+    Control(logic::ButtonLogic& button,
+            logic::JoyStickLogic& stick,
+            logic::MotorLogic& shoulder,
+            logic::MotorLogic& elbow,
+            logic::MotorLogic& vert,
+            logic::Position& pos,
+            servo_handle_t& servo,
+            const Config& cfg = Config{});
     void begin();   // enable motors and set the home pose
     void tick();    // runs one segment (blocks ~segmentUs)
     void run();     // tick() forever

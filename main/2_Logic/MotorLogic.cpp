@@ -32,9 +32,12 @@ void MotorLogic::moveABunch(size_t steps, uint32_t freqHz) {
     size_t maxMove = 500;
     while (steps > 0) {
         if (steps > maxMove) {
-            move(maxMove, freqHz);
-        } else move(steps, freqHz);
-        steps -= maxMove;
+            driver_.moveSteps(maxMove, freqHz);
+            steps -= maxMove;
+        } else {
+            move(steps, freqHz);
+            steps = 0;
+        }
     }
 }
 

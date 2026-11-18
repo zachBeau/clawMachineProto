@@ -26,7 +26,7 @@ namespace driver {
     }
 
     bool ButtonDriver::isPressed() {
-        ESP_LOGI(TAG, "called isPressed()");
+        //ESP_LOGI(TAG, "called isPressed()");
         return (gpio_get_level(buttonPin) == 1);
     }
 }

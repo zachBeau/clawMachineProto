@@ -24,15 +24,27 @@ namespace control {
 //→ IK → joint angles → absolute step counts → deltas
 //→ both motors pulse for the same 20 ms
 
-    Control::Control(logic::ButtonLogic& button, logic::JoyStickLogic& stick, logic::MotorLogic& shoulder,
-            logic::MotorLogic& elbow, logic::MotorLogic& vert, logic::Position& pos, const Config& cfg)
-    : button_(button), stick_(stick), shoulder_(shoulder), elbow_(elbow), vert_(vert), pos_(pos), cfg_(cfg) {
-
+Control::Control(logic::ButtonLogic& button,
+                 logic::JoyStickLogic& stick,
+                 logic::MotorLogic& shoulder,
+                 logic::MotorLogic& elbow,
+                 logic::MotorLogic& vert,
+                 logic::Position& pos,
+                 servo_handle_t& servo,
+                 const Config& cfg)
+    : button_(button),
+      stick_(stick),
+      shoulder_(shoulder),
+      elbow_(elbow),
+      vert_(vert),
+      pos_(pos),
+      servo_(servo),
+      cfg_(cfg) {
     const float twoPi = 6.28318530718f;
     stepsPerRad1 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep1 * cfg_.gear1 / twoPi;
     stepsPerRad2 = (360.0f / cfg_.stepAngleDeg) * cfg_.microstep2 * cfg_.gear2 / twoPi;
 
-        stick_.calibrate();
+    stick_.calibrate();
 }
 //convert tip position to angular motor steps
 bool Control::toSteps(float x, float y, long& s1, long& s2) const {
@@ -49,6 +61,8 @@ void Control::begin() {
     shoulder_.enable(0);   // 0 = enabled on your drivers (same as your original main)
     elbow_.enable(0);
 
+    //ESP_ERROR_CHECK(iot_servo_write_angle(servo_, 90.0f));
+
     tipX = cfg_.startX;
     tipY = cfg_.startY;
     if (!toSteps(tipX, tipY, steps1, steps2)) {
@@ -57,6 +71,10 @@ void Control::begin() {
         ready = false;
         return;
     }
+
+    //go from starting position to the new bounds and set them
+    //toWorkingSpace();
+
     ready = true;
     ESP_LOGI(TAG, "Ready. Home (%.2f, %.2f) -> steps (%ld, %ld)", tipX, tipY, steps1, steps2);
 }
@@ -133,7 +151,7 @@ void Control::tick() {
     static int n = 0;
     if (++n % 12 == 0) {   // about 4 times per second
         ESP_LOGI(TAG, "stick(%.2f,%.2f) tip(%.2f,%.2f) steps(%ld,%ld) d(%ld,%ld) moved=%d",
-                 joyStickX, joyStickY, tipY, tipX, steps1, steps2, shoulderSteps, elbowSteps, moved);
+                 joyStickX, joyStickY, tipX, tipY, steps1, steps2, shoulderSteps, elbowSteps, moved);
     }
     if (shoulderSteps == 0 && elbowSteps == 0) {
         vTaskDelay(segTicks);
@@ -159,11 +177,54 @@ void Control::run() {
             //vertical stepper motor is NOT microstepping
             //assuming one revelution raises/lowers the level 1/8 inch, 200 steps for 1/8 inch movement, and moving 3 inches
             //200 * 8 * 3 = 4800
+            ESP_LOGI(TAG, "Button was pressed");
+            //vertical stepper motor is NOT microstepping
+            //assuming one revelution raises/lowers the level 1/8 inch, 200 steps for 1/8 inch movement, and moving 3 inches
+            //200 * 8 * 3 = 4800
+            
+            vert_.enable(0);
             cfg_.invertZ ? vert_.setDir(0) : vert_.setDir(1);
-            vert_.moveABunch(4800, 100);
-            vTaskDelay(pdMS_TO_TICKS(1000)); //set claw logic here
+            vert_.moveABunch(1750, 1000);
+            ESP_LOGI(TAG, "Servo?");
+            ESP_ERROR_CHECK(iot_servo_write_angle(servo_, 90.0f));
             cfg_.invertZ ? vert_.setDir(1) : vert_.setDir(0);
-            vert_.moveABunch(4800, 100);
+            // move to chute
+            
+            vert_.moveABunch(1750, 1000);
+
+            float requestedX = 21.5f; //stick value * vMax * segmentUS(converted to seconds)
+            float requestedY = 21.5f;
+            long shoulderSteps = 0, elbowSteps = 0;
+
+            float originStep1 = 2576.0f, originStep2 = -3911.0f; 
+
+            shoulderSteps = steps1 - originStep1;
+            elbowSteps = steps2 - originStep2;
+
+            tipX = requestedX;
+            tipY = requestedY;
+
+            ESP_LOGI(TAG, "DROP SEQUENCE: tip(%.2f,%.2f) steps(%ld,%ld) d(%ld,%ld)",
+                  tipX, tipY, steps1, steps2, shoulderSteps, elbowSteps);
+               
+
+                bool dir1 = !((shoulderSteps >= 0) != cfg_.invertShoulder);
+                bool dir2 = !((elbowSteps >= 0) != cfg_.invertElbow);
+                shoulder_.setDir(dir1 ? 1 : 0);
+                elbow_.setDir(dir2 ? 1 : 0);
+                esp_rom_delay_us(10);   // DIR setup time before the first pulse in case direction changes
+
+                shoulder_.moveABunch(static_cast<uint32_t>(labs(shoulderSteps)), 500);
+                elbow_.moveABunch(static_cast<uint32_t>(labs(elbowSteps)), 500);
+            shoulder_.wait();
+            elbow_.wait();
+
+                steps1 = originStep1;
+                steps2 = originStep2;
+
+
+            ESP_ERROR_CHECK(iot_servo_write_angle(servo_, 0.0f));
+            vert_.enable(1);
         }
         tick();
     }
