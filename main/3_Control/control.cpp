@@ -181,7 +181,7 @@ void Control::run() {
             //vertical stepper motor is NOT microstepping
             //assuming one revelution raises/lowers the level 1/8 inch, 200 steps for 1/8 inch movement, and moving 3 inches
             //200 * 8 * 3 = 4800
-            
+
             vert_.enable(0);
             cfg_.invertZ ? vert_.setDir(0) : vert_.setDir(1);
             vert_.moveABunch(1750, 1000);
@@ -189,14 +189,14 @@ void Control::run() {
             ESP_ERROR_CHECK(iot_servo_write_angle(servo_, 90.0f));
             cfg_.invertZ ? vert_.setDir(1) : vert_.setDir(0);
             // move to chute
-            
+
             vert_.moveABunch(1750, 1000);
 
             float requestedX = 21.5f; //stick value * vMax * segmentUS(converted to seconds)
             float requestedY = 21.5f;
             long shoulderSteps = 0, elbowSteps = 0;
 
-            float originStep1 = 2576.0f, originStep2 = -3911.0f; 
+            long originStep1 = 3555, originStep2 = -3911;
 
             shoulderSteps = steps1 - originStep1;
             elbowSteps = steps2 - originStep2;
@@ -206,7 +206,7 @@ void Control::run() {
 
             ESP_LOGI(TAG, "DROP SEQUENCE: tip(%.2f,%.2f) steps(%ld,%ld) d(%ld,%ld)",
                   tipX, tipY, steps1, steps2, shoulderSteps, elbowSteps);
-               
+
 
                 bool dir1 = !((shoulderSteps >= 0) != cfg_.invertShoulder);
                 bool dir2 = !((elbowSteps >= 0) != cfg_.invertElbow);

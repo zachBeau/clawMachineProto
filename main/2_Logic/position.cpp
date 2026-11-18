@@ -20,17 +20,28 @@ namespace logic {
         float c2 = (commandedX * commandedX + commandedY * commandedY - l1_ * l1_ - l2_ * l2_) / (2.0f * l1_ * l2_); //cos theta
         if (!(c2 >= -C2_LIMIT && c2 <= C2_LIMIT)) return false;  // also rejects NaN
 
+        float s2 = sqrtf(1.0f - c2 * c2);
+        if (!elbowDown_) s2 = -s2;          // pick the elbow shape
+
+        theta2 = atan2f(s2, c2);
+        float k1 = l1_ + l2_ * c2;          // tip position along link 1
+        float k2 = l2_ * s2;                // tip position across link 1
+        theta1 = atan2f(commandedY, commandedX) - atan2f(k2, k1);
+        return true;
+
         // float a2 = acosf(c2);
         // if (!elbowDown_) a2 = -a2;
         // theta2 = a2;
         // theta1 = atan2f(commandedY, commandedX) - atan2f(l2_ * sinf(a2), l1_ + l2_ * cosf(a2));
         // return true;
+        /*
         float s2 = -sqrt(1 - (c2) * (c2));
         theta2 = (atan2f(s2, c2));
         float k1 = l1_ + (l2_ * c2);
         float k2 = l2_ * c2;
         theta1 = (atan2f(commandedY, commandedX) - atan2f(k2, k1));
         return true;
+        */
     }
 
     void Position::forwardKinematics(float theta1, float theta2, float& currentX, float& currentY) const {

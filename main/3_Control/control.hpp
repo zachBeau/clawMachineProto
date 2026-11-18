@@ -40,7 +40,7 @@ struct Config {
     float yMin = 2.0f;                 // keeps tip above this line
     float yMax = 35.0f;
     float xMin = 20.0f;
-    float xMax = 40.0f;
+    float xMax = 50.0f;
 
     // float yMin = -28.0f;                 // keeps tip above this line
     // float yMax = 28.0f;

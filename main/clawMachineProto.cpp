@@ -61,7 +61,7 @@ extern "C" void app_main(void)
     static logic::MotorLogic shoulder(shoulderDrv);
     static logic::MotorLogic elbow(elbowDrv);
     static logic::MotorLogic vertical(vert);
-    static logic::Position pos(26.5f, 26.5f); // l1, l2
+    static logic::Position pos(26.5f, 26.5f, false); // l1, l2
     ESP_LOGI(TAG, "Logic files complete");
     ESP_LOGI(TAG, "Initializing arm configuration");
     control::Config cfg;
